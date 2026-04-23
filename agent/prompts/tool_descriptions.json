@@ -1,0 +1,65 @@
+[
+  {
+    "name": "validate_trident_signal",
+    "description": "Validates the current MCF and Trident signals against confidence scores and noise thresholds. Input: { \"wiv_z\": number, \"bav_z\": number, \"icv_z\": number, \"confidence\": number }",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "wiv_z": { "type": "number" },
+        "bav_z": { "type": "number" },
+        "icv_z": { "type": "number" },
+        "confidence": { "type": "number" }
+      },
+      "required": ["wiv_z", "bav_z", "icv_z", "confidence"]
+    }
+  },
+  {
+    "name": "query_personal_history",
+    "description": "Retrieves the full longitudinal history of a specific marker for the patient. Input: { \"patient_id\": \"string\", \"marker_name\": \"string\" }",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "patient_id": { "type": "string" },
+        "marker_name": { "type": "string" }
+      },
+      "required": ["patient_id", "marker_name"]
+    }
+  },
+  {
+    "name": "compute_vascular_anomaly_score",
+    "description": "Computes a deep-dive Vascular Anomaly Score (VAS) based on ICV components. Input: { \"nlr\": number, \"plr\": number, \"rar\": number }",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "nlr": { "type": "number" },
+        "plr": { "type": "number" },
+        "rar": { "type": "number" }
+      },
+      "required": ["nlr", "plr", "rar"]
+    }
+  },
+  {
+    "name": "generate_triage_dossier",
+    "description": "Generates a clinical-grade markdown dossier summarizing the investigation. Input: { \"investigation_summary\": \"string\", \"risk_level\": \"string\" }",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "investigation_summary": { "type": "string" },
+        "risk_level": { "type": "string" }
+      },
+      "required": ["investigation_summary", "risk_level"]
+    }
+  },
+  {
+    "name": "escalate_to_oncologist",
+    "description": "Routes the final dossier to an oncologist for review. Input: { \"dossier_content\": \"string\", \"urgency\": \"string\" }",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "dossier_content": { "type": "string" },
+        "urgency": { "type": "string" }
+      },
+      "required": ["dossier_content", "urgency"]
+    }
+  }
+]

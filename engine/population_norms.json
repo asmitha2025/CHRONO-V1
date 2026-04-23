@@ -1,0 +1,165 @@
+{
+  "description": "Population reference ranges derived from NHANES and clinical literature. Used for initial normalisation before personal baseline is established.",
+  "source": "NHANES (CDC), UK Biobank, clinical reference ranges",
+  "markers": {
+    "ldh": {
+      "name": "Lactate Dehydrogenase",
+      "unit": "U/L",
+      "population_mean": 180.0,
+      "population_std": 40.0,
+      "reference_low": 140.0,
+      "reference_high": 280.0,
+      "cancer_direction": "increases"
+    },
+    "glucose": {
+      "name": "Glucose (Fasting)",
+      "unit": "mg/dL",
+      "population_mean": 95.0,
+      "population_std": 12.0,
+      "reference_low": 70.0,
+      "reference_high": 100.0,
+      "cancer_direction": "increases"
+    },
+    "rdw": {
+      "name": "Red Cell Distribution Width",
+      "unit": "%",
+      "population_mean": 13.2,
+      "population_std": 1.2,
+      "reference_low": 11.5,
+      "reference_high": 14.5,
+      "cancer_direction": "increases"
+    },
+    "albumin": {
+      "name": "Albumin",
+      "unit": "g/dL",
+      "population_mean": 4.2,
+      "population_std": 0.35,
+      "reference_low": 3.5,
+      "reference_high": 5.5,
+      "cancer_direction": "decreases"
+    },
+    "creatinine": {
+      "name": "Creatinine",
+      "unit": "mg/dL",
+      "population_mean": 0.9,
+      "population_std": 0.2,
+      "reference_low": 0.6,
+      "reference_high": 1.2,
+      "cancer_direction": "variable"
+    },
+    "crp": {
+      "name": "C-Reactive Protein",
+      "unit": "mg/L",
+      "population_mean": 2.0,
+      "population_std": 3.0,
+      "reference_low": 0.0,
+      "reference_high": 3.0,
+      "cancer_direction": "increases"
+    },
+    "alp": {
+      "name": "Alkaline Phosphatase",
+      "unit": "U/L",
+      "population_mean": 70.0,
+      "population_std": 20.0,
+      "reference_low": 44.0,
+      "reference_high": 147.0,
+      "cancer_direction": "increases"
+    },
+    "mcv": {
+      "name": "Mean Corpuscular Volume",
+      "unit": "fL",
+      "population_mean": 90.0,
+      "population_std": 5.0,
+      "reference_low": 80.0,
+      "reference_high": 100.0,
+      "cancer_direction": "increases"
+    },
+    "wbc": {
+      "name": "White Blood Cell Count",
+      "unit": "×10³/µL",
+      "population_mean": 7.0,
+      "population_std": 2.0,
+      "reference_low": 4.5,
+      "reference_high": 11.0,
+      "cancer_direction": "variable"
+    },
+    "lymphocyte_pct": {
+      "name": "Lymphocyte Percentage",
+      "unit": "%",
+      "population_mean": 30.0,
+      "population_std": 8.0,
+      "reference_low": 20.0,
+      "reference_high": 40.0,
+      "cancer_direction": "decreases"
+    },
+    "neutrophils": {
+      "name": "Neutrophil Count",
+      "unit": "×10³/µL",
+      "population_mean": 4.3,
+      "population_std": 1.5,
+      "reference_low": 1.8,
+      "reference_high": 7.7,
+      "cancer_direction": "increases"
+    },
+    "lymphocytes": {
+      "name": "Lymphocyte Count",
+      "unit": "×10³/µL",
+      "population_mean": 2.1,
+      "population_std": 0.7,
+      "reference_low": 1.0,
+      "reference_high": 4.8,
+      "cancer_direction": "decreases"
+    },
+    "platelets": {
+      "name": "Platelet Count",
+      "unit": "×10³/µL",
+      "population_mean": 250.0,
+      "population_std": 60.0,
+      "reference_low": 150.0,
+      "reference_high": 400.0,
+      "cancer_direction": "variable"
+    },
+    "hemoglobin": {
+      "name": "Hemoglobin",
+      "unit": "g/dL",
+      "population_mean": 14.0,
+      "population_std": 1.5,
+      "reference_low": 12.0,
+      "reference_high": 17.5,
+      "cancer_direction": "decreases"
+    },
+    "nlr": {
+      "name": "Neutrophil-to-Lymphocyte Ratio",
+      "unit": "ratio",
+      "population_mean": 2.15,
+      "population_std": 0.85,
+      "reference_low": 1.0,
+      "reference_high": 3.0,
+      "cancer_direction": "increases",
+      "computed": true,
+      "formula": "neutrophils / lymphocytes"
+    },
+    "plr": {
+      "name": "Platelet-to-Lymphocyte Ratio",
+      "unit": "ratio",
+      "population_mean": 120.0,
+      "population_std": 45.0,
+      "reference_low": 50.0,
+      "reference_high": 150.0,
+      "cancer_direction": "increases",
+      "computed": true,
+      "formula": "platelets / lymphocytes"
+    },
+    "rar": {
+      "name": "RDW-to-Albumin Ratio",
+      "unit": "ratio",
+      "population_mean": 3.14,
+      "population_std": 0.5,
+      "reference_low": 2.0,
+      "reference_high": 4.0,
+      "cancer_direction": "increases",
+      "computed": true,
+      "formula": "rdw / albumin"
+    }
+  }
+}

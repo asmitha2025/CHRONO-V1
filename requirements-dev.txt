@@ -1,0 +1,13 @@
+# CHRONO — Dev/Training Dependencies
+# For the Unsloth Fine-Tuning Track
+
+# Core dependencies from requirements.txt
+-r requirements.txt
+
+# Fine-Tuning
+unsloth
+trl
+peft
+bitsandbytes
+datasets
+sentencepiece

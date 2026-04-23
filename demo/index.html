@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHRONO | The Trident Signal System</title>
+    <link rel="stylesheet" href="index.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="metabolic-nocturne">
+    <!-- Background Elements -->
+    <div class="glow-sphere sphere-1"></div>
+    <div class="glow-sphere sphere-2"></div>
+    
+    <nav class="glass-nav">
+        <div class="logo">
+            <span class="logo-text">CHRONO</span>
+            <span class="logo-badge">Gemma 4</span>
+        </div>
+        <div class="nav-links">
+            <a href="#dashboard" class="active">Dashboard</a>
+            <a href="#history">Personal Baseline</a>
+            <a href="#protocol99">Protocol-99</a>
+        </div>
+        <div class="patient-pill">
+            <img src="https://ui-avatars.com/api/?name=Priya&background=06b6d4&color=fff" alt="Priya">
+            <span>Priya</span>
+        </div>
+    </nav>
+
+    <main class="dashboard-container">
+        <!-- Hero Section -->
+        <header class="dashboard-header">
+            <div class="header-content">
+                <h1>Metabolic Cancer Fingerprint</h1>
+                <p class="subtitle">Unified velocity analysis of Warburg, Biological Age, and Immune signals.</p>
+            </div>
+            <div class="status-indicator">
+                <div class="indicator-ring orange-glow">
+                    <span class="mcf-value">0.73</span>
+                    <span class="mcf-label">MCF SCORE</span>
+                </div>
+                <div class="status-meta">
+                    <span class="band-tag orange-tag">ORANGE BAND</span>
+                    <span class="status-msg">Protocol-99 Activated</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Trident Gauge Section -->
+        <section class="trident-grid">
+            <div class="signal-card glass" id="wiv-card">
+                <div class="card-header">
+                    <i class="fa-solid fa-fire-flame-curved"></i>
+                    <h3>Warburg Index</h3>
+                </div>
+                <div class="velocity-stat">
+                    <span class="vel-value">+0.121</span>
+                    <span class="vel-unit">WI / month</span>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar orange-bar" style="width: 72%"></div>
+                </div>
+                <p class="card-desc">Aerobic glycolysis shift detected.</p>
+            </div>
+
+            <div class="signal-card glass" id="bav-card">
+                <div class="card-header">
+                    <i class="fa-solid fa-hourglass-half"></i>
+                    <h3>Bio-Age Velocity</h3>
+                </div>
+                <div class="velocity-stat">
+                    <span class="vel-value">+0.096</span>
+                    <span class="vel-unit">years / month</span>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar amber-bar" style="width: 45%"></div>
+                </div>
+                <p class="card-desc">Cellular aging acceleration stable.</p>
+            </div>
+
+            <div class="signal-card glass" id="icv-card">
+                <div class="card-header">
+                    <i class="fa-solid fa-shield-virus"></i>
+                    <h3>Immune Collapse</h3>
+                </div>
+                <div class="velocity-stat">
+                    <span class="vel-value">+0.157</span>
+                    <span class="vel-unit">units / month</span>
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar red-bar" style="width: 88%"></div>
+                </div>
+                <p class="card-desc">Immune ratio deterioration critical.</p>
+            </div>
+        </section>
+
+        <!-- Main Content Area -->
+        <div class="content-split">
+            <!-- Left Column: Baseline Chart -->
+            <section class="chart-section glass">
+                <div class="section-header">
+                    <h3>Personal Baseline Velocity (6-Year History)</h3>
+                    <div class="chart-controls">
+                        <button class="pill-btn active">LDH</button>
+                        <button class="pill-btn">NLR</button>
+                        <button class="pill-btn">BAA</button>
+                    </div>
+                </div>
+                <div class="chart-container" id="baseline-chart">
+                    <!-- Chart Placeholder for JS -->
+                    <div class="chart-mock">
+                        <svg viewBox="0 0 1000 300">
+                            <path d="M0,250 L100,245 L200,248 L300,240 L400,235 L500,220 L600,180 L700,120 L800,80 L900,40" 
+                                  fill="none" stroke="url(#lineGradient)" stroke-width="4" />
+                            <defs>
+                                <linearGradient id="lineGradient" x1="0" y1="0" x2="1" y2="0">
+                                    <stop offset="0%" stop-color="#22c55e" />
+                                    <stop offset="60%" stop-color="#f59e0b" />
+                                    <stop offset="100%" stop-color="#ef4444" />
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <div class="personal-envelope"></div>
+                    </div>
+                </div>
+                <div class="chart-legend">
+                    <span><i class="fa-solid fa-circle" style="color: #22c55e"></i> Normal</span>
+                    <span><i class="fa-solid fa-circle" style="color: #f97316"></i> Personal Deviation</span>
+                    <span class="pop-range">Population Reference Range (Static)</span>
+                </div>
+            </section>
+
+            <!-- Right Column: Protocol-99 Console -->
+            <section class="agent-console glass">
+                <div class="section-header">
+                    <h3><i class="fa-solid fa-microchip"></i> Protocol-99 Agentic Triage</h3>
+                    <span class="badge pulse">REASONING</span>
+                </div>
+                <div class="console-output" id="console">
+                    <!-- Agent steps will appear here via JS -->
+                </div>
+                <div class="console-actions">
+                    <button class="primary-btn" id="view-dossier-btn">
+                        <i class="fa-solid fa-file-medical"></i> View Clinical Dossier
+                    </button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Dossier Modal -->
+    <div class="modal" id="dossier-modal">
+        <div class="modal-content glass">
+            <div class="modal-header">
+                <h2>Clinical Triage Dossier</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body markdown-body" id="dossier-content">
+                <!-- Dossier Markdown content -->
+            </div>
+            <div class="modal-footer">
+                <button class="secondary-btn">Download PDF</button>
+                <button class="primary-btn">Escalate to Oncologist</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
