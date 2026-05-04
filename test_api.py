@@ -3,7 +3,6 @@ CHRONO — API Connectivity Test
 Verifies that the Google AI Studio API key is working and can reach Gemma.
 """
 import os
-import requests
 import sys
 sys.stdout.reconfigure(encoding="utf-8")
 from dotenv import load_dotenv
@@ -18,17 +17,16 @@ def test_gemma_connectivity():
 
     print(f"Testing connectivity with key: {api_key[:5]}...{api_key[-4:]}")
     
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemma-3-4b-it:generateContent?key={api_key}"
-    payload = {
-        "contents": [{"parts": [{"text": "Hello Gemma, confirm you are Protocol-99 ready."}]}]
-    }
+    from google import genai
     
     try:
-        resp = requests.post(url, json=payload, timeout=10)
-        resp.raise_for_status()
-        text = resp.json()["candidates"][0]["content"]["parts"][0]["text"]
+        client = genai.Client(api_key=api_key)
+        response = client.models.generate_content(
+            model='gemma-4-e4b-it',
+            contents='Hello Gemma, confirm you are Protocol-99 ready.'
+        )
         print("✅ Success! Gemma responded:")
-        print(f"---\n{text}\n---")
+        print(f"---\n{response.text}\n---")
     except Exception as e:
         print(f"❌ API Connection Failed: {e}")
 

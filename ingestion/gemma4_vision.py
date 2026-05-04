@@ -35,11 +35,11 @@ BACKEND = os.getenv("GEMMA_BACKEND", "google_ai").lower()
 
 GOOGLE_AI_API_KEY = os.getenv("GOOGLE_AI_API_KEY", "")
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
-HUGGINGFACE_MODEL = os.getenv("HUGGINGFACE_MODEL", "google/gemma-3-4b-it")
+HUGGINGFACE_MODEL = os.getenv("HUGGINGFACE_MODEL", "google/gemma-4-e4b-it")
 
 # ── Gemma 4 extraction prompt ────────────────────────────────────
 EXTRACTION_SYSTEM_PROMPT = """You are a medical document parser for CHRONO, an AI health system.
-Extract ALL blood test values from this lab report image.
+Extract ALL blood test values from this lab report image or audio dictation.
 Return ONLY valid JSON with this exact schema — no other text:
 
 {
@@ -163,36 +163,39 @@ def _parse_gemma_response(response_text: str) -> dict:
 
 def _extract_via_google_ai(image_path: str) -> dict:
     """Extract using Google AI Studio API (Gemma 4 E4B)."""
-    import requests
+    from google import genai
+    from google.genai import types
     from dotenv import load_dotenv
     load_dotenv()
     
     api_key = os.getenv("GOOGLE_AI_API_KEY")
-    img_b64 = _image_to_base64(image_path)
-    ext = Path(image_path).suffix.lower().lstrip(".")
-    mime = {"jpg": "image/jpeg", "jpeg": "image/jpeg",
-            "png": "image/png", "webp": "image/webp"}.get(ext, "image/jpeg")
-
-    payload = {
-        "contents": [{
-            "parts": [
-                {"text": EXTRACTION_SYSTEM_PROMPT},
-                {"inline_data": {"mime_type": mime, "data": img_b64}},
-            ]
-        }],
-        "generationConfig": {"temperature": 0.1, "maxOutputTokens": 2048},
-    }
-    # Using gemma-3-4b-it as the vision-capable model in the API
-    url = (
-        f"https://generativelanguage.googleapis.com/v1beta/models/"
-        f"gemma-3-4b-it:generateContent?key={api_key}"
-    )
+    client = genai.Client(api_key=api_key)
     
-    print(f"[CHRONO Ingestion] Sending lab report to Gemma 4B Vision...")
-    resp = requests.post(url, json=payload, timeout=60)
-    resp.raise_for_status()
-    text = resp.json()["candidates"][0]["content"]["parts"][0]["text"]
-    return _parse_gemma_response(text)
+    ext = Path(image_path).suffix.lower().lstrip(".")
+    is_audio = ext in ["mp3", "wav", "m4a", "ogg", "flac"]
+    
+    with open(image_path, "rb") as f:
+        file_bytes = f.read()
+
+    if is_audio:
+        mime = {"mp3": "audio/mp3", "wav": "audio/wav", "m4a": "audio/m4a", "ogg": "audio/ogg", "flac": "audio/flac"}.get(ext, "audio/mp3")
+        media_part = types.Part.from_bytes(data=file_bytes, mime_type=mime)
+        print(f"[CHRONO Ingestion] Sending lab report audio to Gemma 4...")
+    else:
+        mime = {"jpg": "image/jpeg", "jpeg": "image/jpeg",
+                "png": "image/png", "webp": "image/webp"}.get(ext, "image/jpeg")
+        media_part = types.Part.from_bytes(data=file_bytes, mime_type=mime)
+        print(f"[CHRONO Ingestion] Sending lab report image to Gemma 4 Vision...")
+
+    response = client.models.generate_content(
+        model='gemma-4-e4b-it',
+        contents=[EXTRACTION_SYSTEM_PROMPT, media_part],
+        config=types.GenerateContentConfig(
+            temperature=0.1,
+            max_output_tokens=2048,
+        )
+    )
+    return _parse_gemma_response(response.text)
 
 
 def _extract_via_ollama(image_path: str) -> dict:
@@ -200,7 +203,7 @@ def _extract_via_ollama(image_path: str) -> dict:
     import requests
     img_b64 = _image_to_base64(image_path)
     payload = {
-        "model": "gemma3:4b",
+        "model": "gemma4:e4b",
         "prompt": EXTRACTION_SYSTEM_PROMPT,
         "images": [img_b64],
         "stream": False,

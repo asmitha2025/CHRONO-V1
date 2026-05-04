@@ -153,10 +153,10 @@ PRIYA_TIMELINE = [
             # LDH creeping up, still "normal" by population
             "ldh":          185.0,   # +6.3% above personal mean (was ~170)
             "rdw":          13.5,    # rising
-            "glucose":      97.0,    # slightly elevated
+            "glucose":      95.5,    # slightly elevated
             "albumin":      4.12,    # starting to decline
             "creatinine":   0.87,
-            "crp":          2.1,     # CRP rising
+            "crp":          1.6,     # CRP rising
             "alp":          71.0,
             "mcv":          89.5,
             "wbc":          7.1,
@@ -175,10 +175,10 @@ PRIYA_TIMELINE = [
         "markers": {
             "ldh":          198.0,   # +17% above personal mean — still "normal" (ref ≤280)
             "rdw":          13.9,    # nearing personal envelope top
-            "glucose":      99.0,
+            "glucose":      97.0,
             "albumin":      4.05,
             "creatinine":   0.88,
-            "crp":          2.8,
+            "crp":          2.0,
             "alp":          75.0,
             "mcv":          90.5,
             "wbc":          7.4,
@@ -199,10 +199,10 @@ PRIYA_TIMELINE = [
             # But dramatically above personal baselines
             "ldh":          214.0,   # +26% above personal mean — still normal (ref ≤280)
             "rdw":          14.2,    # at top of personal envelope
-            "glucose":      101.0,   # just above personal baseline
+            "glucose":      99.5,   # just below population max (ref ≤100)
             "albumin":      3.95,    # declining — below personal min envelope
             "creatinine":   0.89,
-            "crp":          3.8,     # now above population range
+            "crp":          2.9,     # at top of population range (ref ≤3.0)
             "alp":          81.0,
             "mcv":          91.0,
             "wbc":          7.8,
@@ -251,7 +251,7 @@ def save_priya_dataset(output_dir: str = None) -> str:
     path = os.path.join(output_dir, "priya_timeline.json")
     with open(path, "w") as f:
         json.dump(generate_priya_dataset(), f, indent=2)
-    print(f"[CHRONO] Priya demo dataset saved → {path}")
+    print(f"[CHRONO] Priya demo dataset saved -> {path}")
     return path
 
 

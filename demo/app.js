@@ -91,12 +91,15 @@ async function simulateAgent() {
  * Converts simple Markdown to HTML for the dossier
  */
 function renderMarkdown(md) {
-    return md
+    let html = md
         .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-        .replace(/^## (.*$)/gim, '<h2>$2</h2>')
-        .replace(/^\*\* (.*$)/gim, '<strong>$1</strong>')
-        .replace(/^\* (.*$)/gim, '<li>$1</li>')
-        .replace(/\n/g, '<br>');
+        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/^[-*] (.*$)/gim, '<li>$1</li>');
+        
+    // Wrap consecutive li elements in a ul
+    html = html.replace(/(<li>.*<\/li>\s*)+/g, match => `<ul>${match}</ul>`);
+    return html.replace(/\n/g, '<br>');
 }
 
 // --- Event Listeners ---

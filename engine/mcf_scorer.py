@@ -111,9 +111,9 @@ class MCFScorer:
 
     # Normalization ranges for each signal
     # These map the raw velocity values to [0, 1]
-    WIV_RANGE = (-0.5, 1.5)    # WIV in WI units/month
-    BAV_RANGE = (-0.5, 1.5)    # BAV in years/month
-    ICV_RANGE = (-0.3, 0.8)    # ICV in units/month
+    WIV_RANGE = (-0.1, 0.5)    # WIV in WI units/month
+    BAV_RANGE = (-0.1, 0.5)    # BAV in years/month
+    ICV_RANGE = (-0.05, 0.3)    # ICV in units/month
 
     def compute(
         self,

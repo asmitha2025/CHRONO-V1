@@ -14,11 +14,13 @@ import re
 from typing import List, Dict, Any, Optional
 
 # Import tools
-from agent.tools.validate_signal import validate_trident_signal
-from agent.tools.query_history import query_personal_history
-from agent.tools.vascular_anomaly import compute_vascular_anomaly_score
-from agent.tools.generate_dossier import generate_triage_dossier
-from agent.tools.escalate_oncologist import escalate_to_oncologist
+from agent.tools import (
+    validate_trident_signal,
+    query_personal_history,
+    compute_vascular_anomaly_score,
+    generate_triage_dossier,
+    escalate_to_oncologist
+)
 
 class Protocol99Agent:
     """
@@ -93,9 +95,9 @@ class Protocol99Agent:
         })
         vas = compute_vascular_anomaly_score(
             self.mcf_result.icv_raw, # simplified for simulation
-            168.0, 3.1
+            168.0, 3.59
         )
-        trace.append({"role": "action", "content": "compute_vascular_anomaly_score(nlr=3.12, plr=167.6, rar=3.59)"})
+        trace.append({"role": "action", "content": f"compute_vascular_anomaly_score(nlr={self.mcf_result.icv_raw}, plr=168.0, rar=3.59)"})
         trace.append({"role": "observation", "content": json.dumps(vas)})
         
         # --- Step 4: Generate Dossier ---
@@ -108,7 +110,7 @@ class Protocol99Agent:
             f"BAV acceleration {self.mcf_result.bav_raw:+.3f} yrs/mo. ICV deterioration {self.mcf_result.icv_raw:+.3f} units/mo. "
             f"Personal baseline deviation exceeded 1.5σ for LDH and RDW. VAS score 6.96."
         )
-        dossier = generate_triage_dossier(summary, "CRITICAL", self.patient_id)
+        dossier = generate_triage_dossier(summary, "CRITICAL", self.patient_id, self.mcf_result.bav_raw)
         trace.append({"role": "action", "content": "generate_triage_dossier(risk_level='CRITICAL')"})
         trace.append({"role": "observation", "content": "Dossier generated successfully (Markdown format)."})
         
@@ -138,38 +140,86 @@ class Protocol99Agent:
         """
         Real ReAct loop using Gemma via Google AI Studio API.
         """
-        import requests
+        from google import genai
+        from google.genai import types
+        
         api_key = os.getenv("GOOGLE_AI_API_KEY")
         if not api_key:
             print("[CHRONO] No API key found. Falling back to simulation.")
             return self.run_simulation()
 
         prompt = self._get_formatted_prompt()
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/gemma-3-27b-it:generateContent?key={api_key}"
+        client = genai.Client(api_key=api_key)
         
-        headers = {"Content-Type": "application/json"}
-        payload = {
-            "contents": [{"parts": [{"text": prompt}]}],
-            "generationConfig": {
-                "temperature": 0.1,
-                "maxOutputTokens": 2048
-            }
-        }
+        # Wrappers for tools to inject state where needed
+        def query_personal_history_tool(marker_name: str) -> dict:
+            """Queries the historical values and timestamps for a marker."""
+            return query_personal_history(self.baseline, marker_name)
+            
+        def generate_triage_dossier_tool(investigation_summary: str, risk_level: str) -> str:
+            """Generates a clinical-grade markdown dossier."""
+            return generate_triage_dossier(investigation_summary, risk_level, self.patient_id, self.mcf_result.bav_raw)
+            
+        gemma_tools = [
+            validate_trident_signal,
+            query_personal_history_tool,
+            compute_vascular_anomaly_score,
+            generate_triage_dossier_tool,
+            escalate_to_oncologist
+        ]
         
         try:
-            print(f"[CHRONO Agent] Contacting Gemma 27B for Protocol-99 triage...")
-            resp = requests.post(url, json=payload, timeout=60)
-            resp.raise_for_status()
+            print(f"[CHRONO Agent] Contacting Gemma 4 26B for Protocol-99 triage with Native Function Calling...")
             
-            # For the demo, we parse the response and wrap it in the ReAct format
-            # In a production system, this would be a multi-turn conversation
-            text = resp.json()["candidates"][0]["content"]["parts"][0]["text"]
+            chat = client.chats.create(
+                model='gemma-4-26b-a4b-it',
+                config=types.GenerateContentConfig(
+                    temperature=0.1,
+                    tools=gemma_tools,
+                    thinking_config={"thinking_budget": 8192}
+                )
+            )
             
-            # Simple wrapper to show real model output in the trace
-            return [
-                {"role": "thought", "content": "I am analyzing the patient's metabolic data using the Trident Engine results."},
-                {"role": "final_answer", "content": text}
-            ]
+            response = chat.send_message(prompt)
+            trace = []
+            
+            for _ in range(self.max_iterations):
+                if response.text:
+                    trace.append({"role": "thought", "content": response.text})
+                    
+                if not response.function_calls:
+                    trace.append({"role": "final_answer", "content": response.text})
+                    break
+                    
+                for fc in response.function_calls:
+                    name = fc.name
+                    args = fc.args
+                    trace.append({"role": "action", "content": f"{name}({args})"})
+                    
+                    # Execute tool
+                    if name == "validate_trident_signal":
+                        res = validate_trident_signal(**args)
+                    elif name == "query_personal_history_tool":
+                        res = query_personal_history_tool(**args)
+                    elif name == "compute_vascular_anomaly_score":
+                        res = compute_vascular_anomaly_score(**args)
+                    elif name == "generate_triage_dossier_tool":
+                        res = generate_triage_dossier_tool(**args)
+                    elif name == "escalate_to_oncologist":
+                        res = escalate_to_oncologist(**args)
+                    else:
+                        res = f"Unknown tool: {name}"
+                        
+                    trace.append({"role": "observation", "content": str(res)})
+                    
+                    response = chat.send_message(
+                        types.Part.from_function_response(
+                            name=name,
+                            response={"result": res}
+                        )
+                    )
+            return trace
+
         except Exception as e:
             print(f"[CHRONO] API Error: {e}. Falling back to simulation.")
             return self.run_simulation()

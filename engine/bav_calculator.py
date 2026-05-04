@@ -111,7 +111,8 @@ class BAVCalculator:
                 if crp is not None and crp > 0:
                     score += coef * math.log(crp)
                     used += 1
-                # If CRP missing, skip (partial computation)
+                else:
+                    print("[CHRONO Warning] CRP missing or invalid; PhenoAge confidence will be severely penalized.")
             else:
                 val = markers.get(key)
                 if val is not None:
@@ -152,6 +153,8 @@ class BAVCalculator:
         )
 
         confidence = used_curr / 9.0
+        if markers_curr.get("crp") is None or markers_curr.get("crp") <= 0:
+            confidence = max(0.0, confidence - 0.25)
 
         return BAVResult(
             phenoage_current=pa_curr,

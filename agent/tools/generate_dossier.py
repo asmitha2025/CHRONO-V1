@@ -4,7 +4,7 @@ Generates a structured clinical dossier in Markdown format.
 """
 from datetime import datetime
 
-def generate_triage_dossier(investigation_summary: str, risk_level: str, patient_id: str) -> str:
+def generate_triage_dossier(investigation_summary: str, risk_level: str, patient_id: str, bav_velocity: float) -> str:
     """
     Generates a clinical-grade markdown dossier.
     """
@@ -22,7 +22,7 @@ def generate_triage_dossier(investigation_summary: str, risk_level: str, patient
 ## Clinical Reasoning (Gemma 4 26B)
 The Trident Signal co-movement (WIV + BAV + ICV) suggests a systemic metabolic shift 
 consistent with pre-cancerous biological states. Specifically, the acceleration 
-of biological age (+{risk_level} years/month) coupled with an increasing Warburg Index 
+of biological age (+{bav_velocity:.3f} years/month) coupled with an increasing Warburg Index 
 indicates aerobic glycolysis dominance, a hallmark of malignant metabolic reprogramming.
 
 ## Recommendations

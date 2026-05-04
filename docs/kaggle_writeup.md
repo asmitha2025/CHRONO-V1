@@ -15,11 +15,11 @@ Instead of population ranges, CHRONO computes each patient's own biological setp
 
 ## 3. Gemma 4 Implementation
 
-### Layer 1: Document Vision (Gemma 4 E4B)
-CHRONO uses Gemma 4 E4B (4.5B) to extract structured markers from heterogeneous lab report photographs. By performing this on-device, we ensure medical privacy while democratizing early detection for users who may only have access to paper records.
+### Layer 1: Document Vision & Audio (Gemma 4 E4B)
+CHRONO uses Gemma 4 E4B (4.5B) and the `google-genai` SDK to extract structured markers from heterogeneous lab report photographs and **audio dictations**. By performing this on-device, we ensure medical privacy while democratizing early detection for users who may only have access to paper records.
 
 ### Layer 2: Protocol-99 Agent (Gemma 4 26B)
-When the Trident Signal identifies a co-moving anomaly (MCF > 0.61), the **Protocol-99 Agent** activates. Powered by Gemma 4 26B, this agent follows a ReAct pattern to:
+When the Trident Signal identifies a co-moving anomaly (MCF > 0.61), the **Protocol-99 Agent** activates. Powered by Gemma 4 26B, this agent uses **Native Function Calling** and **Thinking Mode** (budget: 8192) to:
 1. Validate the signal against confidence thresholds.
 2. Investigate longitudinal trends.
 3. Compute a Vascular Anomaly Score.

@@ -33,17 +33,17 @@ Standard medicine compares your blood to a **population average** (the 2.5th–9
 ## 🛠️ Technology Stack & Architecture
 CHRONO is built on a multi-layer on-device and cloud-enclave architecture.
 
-### 1. Document Ingestion (Gemma 4 Vision)
+### 1. Document Ingestion (Gemma 4 Vision & Audio)
 *   **Model:** Gemma 4 E4B (on-device via LiteRT).
-*   **Function:** Multimodal OCR that reads any lab report (PDF, photo, printout) and extracts structured JSON with unit normalization.
+*   **Function:** Multimodal extraction using the `google-genai` SDK that reads any lab report (PDF, photo, printout, or **audio dictate**) and extracts structured JSON with unit normalization.
 
 ### 2. Trident Signal Engine (Fine-Tuned Gemma 4 E4B)
 *   **Model:** Gemma 4 E4B fine-tuned using **Unsloth** on MIMIC-IV and PubMedQA.
 *   **Function:** Computes WIV, BAV, and ICV scores locally on the user's phone, ensuring maximum privacy.
 
 ### 3. Protocol-99 Agentic Triage (Gemma 4 26B)
-*   **Model:** Gemma 4 26B ReAct Agent in a Private Cloud Enclave.
-*   **Function:** Activated when the **Metabolic Cancer Fingerprint (MCF)** score crosses 0.61. The agent uses tools to:
+*   **Model:** Gemma 4 26B via Google GenAI SDK.
+*   **Function:** Activated when the **Metabolic Cancer Fingerprint (MCF)** score crosses 0.61. The agent uses **Native Function Calling** and **Thinking Mode** (Budget: 8192) to:
     *   `validate_signal`: Eliminate confounders (medication, dehydration).
     *   `query_history`: Cross-reference against 10-year trends.
     *   `generate_dossier`: Create a structured, oncology-grade triage report.

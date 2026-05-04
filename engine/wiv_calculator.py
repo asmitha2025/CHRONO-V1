@@ -97,7 +97,7 @@ class WIVCalculator:
         ldh: Optional[float],
         rdw: Optional[float],
         glucose: Optional[float],
-    ) -> Tuple[float, float, float, float, float]:
+    ) -> Tuple[float, float, float, float, float, float, float]:
         """
         Compute Warburg Index at a single timepoint.
 
