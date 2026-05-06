@@ -219,6 +219,8 @@ PRIYA_TIMELINE = [
 PRIYA_PROFILE = {
     "patient_id": "priya_demo_001",
     "name": "Priya",
+    "birth_year": 1984,
+    "birth_month": 3,
     "age_at_first_test": 34,
     "age_at_trident": 40,
     "chronological_age": 40.0,

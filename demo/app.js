@@ -60,13 +60,99 @@ const dossierContent = document.getElementById('dossier-content');
 
 // --- Functions ---
 
+// --- API Configuration ---
+const API_BASE_URL = 'http://localhost:8000/api/v1';
+const DEFAULT_PATIENT = 'priya_001';
+
+// --- Functions ---
+
+/**
+ * Loads live data from the CHRONO engine via FastAPI
+ */
+async function loadLiveData() {
+    try {
+        console.log("[CHRONO] Fetching live MCF data for", DEFAULT_PATIENT);
+        const response = await fetch(`${API_BASE_URL}/patient/${DEFAULT_PATIENT}/mcf`);
+        if (!response.ok) throw new Error("API not responding");
+        
+        const data = await response.json();
+        updateDashboard(data);
+        
+        // Start agent simulation with live data context
+        simulateAgent(data);
+    } catch (error) {
+        console.error("[CHRONO] Error connecting to engine:", error);
+        // Fallback to static demo if API is down
+        updateDashboard(PRIYA_DEMO);
+        simulateAgent(PRIYA_DEMO);
+    }
+}
+
+/**
+ * Updates the UI components with engine data
+ */
+function updateDashboard(data) {
+    // Update MCF Score
+    const mcfEl = document.getElementById('mcf-score');
+    if (mcfEl) {
+        mcfEl.textContent = data.mcf_score.toFixed(2);
+        mcfEl.style.color = data.band_color;
+    }
+    
+    // Update Band Message
+    const bandEl = document.getElementById('mcf-band');
+    if (bandEl) {
+        bandEl.textContent = data.band;
+        bandEl.style.backgroundColor = data.band_color;
+    }
+
+    // Update Trident Signals
+    const signals = data.components || data.signals;
+    if (signals) {
+        updateSignalCard('wiv', signals.wiv);
+        updateSignalCard('bav', signals.bav);
+        updateSignalCard('icv', signals.icv);
+    }
+}
+
+function updateSignalCard(id, signal) {
+    const valEl = document.getElementById(`${id}-val`);
+    const progressEl = document.getElementById(`${id}-progress`);
+    if (valEl) {
+        const val = signal.raw || signal.val;
+        valEl.textContent = (val > 0 ? '+' : '') + val.toFixed(3);
+    }
+    if (progressEl) {
+        const norm = signal.normalized !== undefined ? signal.normalized : (signal.progress / 100);
+        progressEl.style.width = (norm * 100) + '%';
+        if (signal.alert) progressEl.style.backgroundColor = '#ef4444';
+    }
+}
+
 /**
  * Simulates the agent reasoning process line by line
  */
-async function simulateAgent() {
-    consoleEl.innerHTML = '';
+async function simulateAgent(data) {
+    consoleEl.innerHTML = '<div class="agent-status">Agent Protocol-99 Initializing...</div>';
     
-    for (const step of PRIYA_DEMO.agent_trace) {
+    // In a real app, we might fetch the trace from the backend
+    // For the demo, we use a template that adapts to the live data
+    const trace = [
+        { role: 'thought', content: `MCF score is ${data.mcf_score.toFixed(2)}. I must first validate the Trident signal to ensure this isn't an artifact of low confidence or transient noise.` },
+        { role: 'action', content: `validate_trident_signal(wiv_z=${(data.components?.wiv?.normalized * 3).toFixed(1)}, confidence=${data.confidence.toFixed(2)})` },
+        { role: 'observation', content: '{"is_valid": true, "reason": "Signal validated: strong co-movement detected.", "avg_z": 2.1}' },
+        { role: 'thought', content: "Signal validated. Now investigating long-term marker trends. I'll query the LDH history to see the trajectory of the Warburg signal." },
+        { role: 'action', content: "query_personal_history(marker_name='ldh')" },
+        { role: 'observation', content: "LDH trend: sustained increase (+12% over 18 months). Latest: 214 U/L." },
+        { role: 'thought', content: "Sustained LDH elevation detected. Now performing a deep-dive into the immune collapse pattern using the Vascular Anomaly Score." },
+        { role: 'action', content: `compute_vascular_anomaly_score(nlr=${(data.components?.icv?.raw * 10).toFixed(2)}, plr=168.0, rar=3.59)` },
+        { role: 'observation', content: '{"vas_score": 6.96, "classification": "CRITICAL"}' },
+        { role: 'thought', content: "Vascular Anomaly Score is 6.96 (CRITICAL). Pattern suggests metabolic reprogramming. I will now generate the clinical triage dossier for oncologist review." },
+        { role: 'final', content: "Protocol-99 investigation complete. Trident signal validated. Triage dossier generated and successfully escalated to Oncology Specialist. Case ID: CHRONO-2026-99-A1." }
+    ];
+    
+    consoleEl.innerHTML = '';
+    for (const step of trace) {
         const div = document.createElement('div');
         div.className = `step-${step.role}`;
         
@@ -78,12 +164,8 @@ async function simulateAgent() {
         
         div.innerHTML = `<strong>${prefix}</strong>${step.content}`;
         consoleEl.appendChild(div);
-        
-        // Scroll to bottom
         consoleEl.scrollTop = consoleEl.scrollHeight;
-        
-        // Delay for simulation effect
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        await new Promise(resolve => setTimeout(resolve, 1200));
     }
 }
 
@@ -123,8 +205,8 @@ window.addEventListener('click', (e) => {
 // --- Initialization ---
 
 window.addEventListener('DOMContentLoaded', () => {
-    // Start agent simulation
-    simulateAgent();
+    // Start live data loading
+    loadLiveData();
     
     // Add subtle hover effects to cards
     document.querySelectorAll('.signal-card').forEach(card => {

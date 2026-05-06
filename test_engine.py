@@ -42,52 +42,23 @@ def run_pipeline():
     with console.status("[bold green]Computing Personal Biological Baseline...[/bold green]"):
         baseline = PersonalBaseline(
             patient_id=PRIYA_PROFILE["patient_id"],
-            chronological_age=PRIYA_PROFILE["chronological_age"],
+            birth_year=PRIYA_PROFILE["birth_year"],
+            birth_month=PRIYA_PROFILE["birth_month"]
         )
         for tp in PRIYA_TIMELINE:
             baseline.add_test(tp["date"], tp["markers"])
-            time.sleep(0.1) # UI effect
+            time.sleep(0.05)
 
-    cal = baseline.get_calibration_status()
-    calibrated = [k for k, v in cal.items() if v]
-    
     console.print(f" [bold green]✓[/bold green] Baseline built from {len(PRIYA_TIMELINE)} longitudinal timepoints.")
-    console.print(f" [bold green]✓[/bold green] Calibrated biomarkers: {len(calibrated)}")
 
     # 2. Initialise calculators
     timepoints = [(tp["date"], tp["markers"]) for tp in PRIYA_TIMELINE]
     wiv_calc = WIVCalculator(baseline)
-    bav_calc = BAVCalculator(baseline, chronological_age=PRIYA_PROFILE["chronological_age"])
+    bav_calc = BAVCalculator(baseline)
     icv_calc = ICVCalculator(baseline)
     scorer   = MCFScorer()
 
-    # 3. Tables for History
-    table = Table(title="Longitudinal Metabolic Velocity", border_style="dim")
-    table.add_column("Date", justify="left", style="cyan", no_wrap=True)
-    table.add_column("WIV (Warburg)", justify="right", style="magenta")
-    table.add_column("BAV (Bio-Age)", justify="right", style="green")
-    table.add_column("ICV (Immune)", justify="right", style="red")
-
-    wiv_hist = wiv_calc.compute_full_history(timepoints)
-    bav_hist = bav_calc.compute_full_history(timepoints)
-    icv_hist = icv_calc.compute_full_history(timepoints)
-
-    for i in range(len(timepoints)):
-        w_val = wiv_hist[i]['warburg_index']
-        b_val = bav_hist[i]['baa']
-        i_val = icv_hist[i]['immune_score']
-        
-        table.add_row(
-            timepoints[i][0],
-            f"{w_val:+.3f}",
-            f"{b_val:+.3f} yrs",
-            f"{i_val:+.3f}"
-        )
-
-    console.print("")
-    console.print(table)
-
-    # 4. Final Trident Signal
+    # 3. Final Trident Signal
     console.print("\n[bold cyan]Trident Engine Extraction (Final Timepoint)[/bold cyan]")
     
     with console.status("[bold orange3]Calculating MCF Score...[/bold orange3]"):
@@ -101,23 +72,18 @@ def run_pipeline():
     band_colors = {
         "GREEN": "bold green",
         "AMBER": "bold yellow",
-        "ORANGE": "bold dark_orange",
         "RED": "bold red"
     }
-    b_color = band_colors.get(mcf_result.band, "white")
+    b_color = band_colors.get(mcf_result.alert_level, "white")
 
     result_text = Text()
     result_text.append(f"MCF SCORE: {mcf_result.mcf_score:.4f}\n", style=f"{b_color} italic")
-    result_text.append(f"BAND CLASSIFICATION: {mcf_result.band}\n", style=b_color)
-    result_text.append(f"\nSTATUS: {mcf_result.band_message}\n")
-    result_text.append(f"Trident Firing: {mcf_result.trident_firing}\n")
-    result_text.append(f"Protocol-99 Agent Activation: {mcf_result.protocol99_activated}")
+    result_text.append(f"ALERT LEVEL: {mcf_result.alert_level}\n", style=b_color)
+    result_text.append(f"\nConfidence: {mcf_result.confidence:.2f}\n")
 
     console.print(Panel(result_text, title="[bold]Metabolic Cancer Fingerprint[/bold]", border_style=b_color.split()[1]))
 
-    console.print(f"\n[dim]Summary: {mcf_result.summary}[/dim]")
-    
-    if mcf_result.protocol99_activated:
+    if mcf_result.mcf_score >= 0.61:
         console.print("\n[bold blink red]>> INITIATING PROTOCOL-99 REASONING AGENT <<[/bold blink red]")
 
     return mcf_result
