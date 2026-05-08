@@ -22,7 +22,7 @@ def test_gemma_connectivity():
     try:
         client = genai.Client(api_key=api_key)
         response = client.models.generate_content(
-            model='gemma-4-e4b-it',
+            model='gemma-4-e4b',
             contents='Hello Gemma, confirm you are Protocol-99 ready.'
         )
         print("✅ Success! Gemma responded:")

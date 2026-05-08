@@ -188,7 +188,7 @@ def _extract_via_google_ai(image_path: str) -> dict:
         print(f"[CHRONO Ingestion] Sending lab report image to Gemma 4 Vision...")
 
     response = client.models.generate_content(
-        model='gemma-4-e4b-it',
+        model='gemma-4-e4b',
         contents=[EXTRACTION_SYSTEM_PROMPT, media_part],
         config=types.GenerateContentConfig(
             temperature=0.1,

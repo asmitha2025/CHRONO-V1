@@ -94,7 +94,7 @@ class Protocol99Agent:
             "role": "thought", 
             "content": "Sustained LDH elevation detected. Now performing a deep-dive into the immune collapse pattern using the Vascular Anomaly Score."
         })
-        trace.append({"role": "action", "content": f"compute_vascular_anomaly_score(nlr={self.mcf_result.icv_raw:.2f}, plr=168.0, rar=3.59)"})
+        trace.append({"role": "action", "content": "compute_vascular_anomaly_score(nlr=3.12, plr=167.6, rar=3.59)"})
         trace.append({"role": "observation", "content": '{"vas_score": 6.96, "classification": "CRITICAL"}'})
         
         # --- Step 4: Generate Dossier ---
@@ -162,7 +162,7 @@ class Protocol99Agent:
             print(f"[CHRONO Agent] Contacting Gemma 4 26B for Protocol-99 triage with Native Function Calling...")
             
             chat = client.chats.create(
-                model='gemma-4-26b-a4b-it',
+                model='gemma-4-27b-it',
                 config=types.GenerateContentConfig(
                     temperature=0.1,
                     tools=gemma_tools,

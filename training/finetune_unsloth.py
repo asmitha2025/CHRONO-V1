@@ -17,7 +17,7 @@ except ImportError:
     print("[CHRONO] Unsloth not installed. Run: pip install unsloth")
     # We provide the script as documentation/implementation for the submission.
 
-def run_finetuning(model_name="google/gemma-3-4b-it", dataset_path="training/data/gemma4_finetune_data.json"):
+def run_finetuning(model_name="google/gemma-4-e4b-it", dataset_path="training/data/gemma4_finetune_data.json"):
     """
     Core fine-tuning loop using Unsloth.
     Designed for 16GB VRAM GPUs (T4/L4).
@@ -67,7 +67,15 @@ def run_finetuning(model_name="google/gemma-3-4b-it", dataset_path="training/dat
     print("[CHRONO] Starting Unsloth fine-tuning loop...")
     trainer.train()
     
-    # 6. Save LoRA
+    # 6. Evaluation Block (Added as per user request)
+    print("[CHRONO] Running evaluation on training samples...")
+    FastLanguageModel.for_inference(model)
+    for i in range(min(3, len(dataset))):
+        inputs = tokenizer([dataset[i]["instruction"] + "\n" + dataset[i]["input"]], return_tensors="pt").to("cuda")
+        outputs = model.generate(**inputs, max_new_tokens=128)
+        print(f"Sample {i} Prediction: {tokenizer.decode(outputs[0])}")
+
+    # 7. Save LoRA
     model.save_pretrained("training/chrono_gemma4_lora")
     print("[CHRONO] Fine-tuning complete. Adapters saved to training/chrono_gemma4_lora")
 
@@ -75,4 +83,4 @@ if __name__ == "__main__":
     # In a real environment, this would run the training loop
     print("CHRONO Unsloth Fine-Tuning Module")
     print("Usage: python training/finetune_unsloth.py")
-    # run_finetuning()
+    run_finetuning()

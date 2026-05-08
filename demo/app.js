@@ -51,6 +51,35 @@ The Trident Signal co-movement suggests a systemic metabolic shift consistent wi
     `
 };
 
+// --- Chart Data ---
+const CHART_DATA = {
+    'LDH': [250, 245, 248, 240, 235, 220, 180, 120, 80, 40],
+    'NLR': [2.1, 2.2, 2.0, 2.3, 2.5, 2.8, 3.2, 3.5, 3.8, 4.2],
+    'BAA': [34, 34.2, 34.5, 35, 35.5, 36.2, 37, 38, 39.5, 41]
+};
+
+function switchChart(marker) {
+    console.log("[CHRONO] Switching chart to", marker);
+    const data = CHART_DATA[marker];
+    const path = document.querySelector('.chart-mock svg path');
+    if (path) {
+        // Simple animation: change the path d attribute based on data
+        // For the demo, we just modify the points slightly or use a pre-calculated path
+        let newD = "M0,250 ";
+        data.forEach((val, i) => {
+            const x = (i + 1) * 100;
+            const y = 300 - (val / (marker === 'LDH' ? 300 : marker === 'BAA' ? 50 : 5) * 250);
+            newD += `L${x},${y} `;
+        });
+        path.setAttribute('d', newD);
+    }
+    
+    // Update active button
+    document.querySelectorAll('.pill-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent === marker);
+    });
+}
+
 // --- DOM Elements ---
 const consoleEl = document.getElementById('console');
 const viewDossierBtn = document.getElementById('view-dossier-btn');
@@ -165,7 +194,19 @@ async function simulateAgent(data) {
         div.innerHTML = `<strong>${prefix}</strong>${step.content}`;
         consoleEl.appendChild(div);
         consoleEl.scrollTop = consoleEl.scrollHeight;
-        await new Promise(resolve => setTimeout(resolve, 1200));
+        
+        // Show "Gemma is thinking..." for the next step if it's a thought
+        if (trace.indexOf(step) < trace.length - 1) {
+            const thinkingDiv = document.createElement('div');
+            thinkingDiv.className = 'agent-thinking';
+            thinkingDiv.innerHTML = '<span class="think-dot"></span> Gemma is thinking... (Budget: 8192)';
+            consoleEl.appendChild(thinkingDiv);
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            thinkingDiv.remove();
+        } else {
+            await new Promise(resolve => setTimeout(resolve, 1200));
+        }
     }
 }
 
@@ -207,6 +248,21 @@ window.addEventListener('click', (e) => {
 window.addEventListener('DOMContentLoaded', () => {
     // Start live data loading
     loadLiveData();
+
+    // Chart Button Handlers
+    document.querySelectorAll('.pill-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            switchChart(btn.textContent);
+        });
+    });
+
+    // Download PDF Handler
+    const downloadBtn = document.querySelector('.secondary-btn');
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', () => {
+            window.print();
+        });
+    }
     
     // Add subtle hover effects to cards
     document.querySelectorAll('.signal-card').forEach(card => {

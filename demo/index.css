@@ -354,6 +354,29 @@ h1 {
 .step-observation { color: #22c55e; margin-bottom: 0.5rem; }
 .step-final { color: #fff; font-weight: 700; border-top: 1px solid var(--border); padding-top: 1rem; }
 
+.agent-thinking {
+    font-size: 0.75rem;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 0;
+    opacity: 0.8;
+}
+
+.think-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--primary);
+    border-radius: 50%;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.3; transform: scale(0.8); }
+}
+
 .console-actions { margin-top: 1.5rem; }
 
 .primary-btn {

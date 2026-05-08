@@ -1,11 +1,16 @@
-# CHRONO | The Trident Signal System
+# 🔱 CHRONO | The Trident Signal System
 ### World's First Metabolic Cancer Fingerprint Engine
 **Gemma 4 Good Hackathon 2026 — Health & Sciences Track**
+
+[![CHRONO CI](https://github.com/asmitha2025/CHRONO-V1/actions/workflows/ci.yml/badge.svg)](https://github.com/asmitha2025/CHRONO-V1/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/release/python-3100/)
+[![Gemma 4](https://img.shields.io/badge/Model-Gemma%204-purple.svg)](https://ai.google.dev/gemma)
 
 ---
 
 ## 🌌 Overview
-**CHRONO** is a revolutionary AI-driven metabolic anomaly detection system designed to identify pre-cancerous signals from routine blood test history. By computing biological velocity against a personal baseline, CHRONO fills a critical **3-to-5-year diagnostic blind spot** in oncology—detecting the metabolic "fingerprint" of cancer years before structural changes are visible on imaging (PET/CT/MRI).
+**CHRONO** is a revolutionary AI-driven metabolic anomaly detection system designed to identify pre-cancerous signals from routine blood test history. By computing biological velocity against a **Personal Baseline**, CHRONO fills a critical **3-to-5-year diagnostic blind spot** in oncology—detecting the metabolic "fingerprint" of cancer years before structural changes are visible on imaging.
 
 > "Biology precedes structure. CHRONO listens to the biology before the structure breaks."
 
@@ -16,84 +21,88 @@ The core innovation of CHRONO is the **Trident Signal**, a simultaneous analysis
 
 | Signal | What It Measures | Scientific Basis | Key Markers |
 | :--- | :--- | :--- | :--- |
-| **Warburg Index Velocity (WIV)** | Rate of metabolic shift toward aerobic glycolysis (the "Warburg Effect"). | Warburg 1924, Nobel 1931 | LDH, Glucose, RDW trend |
-| **Biological Age Velocity (BAV)** | Rate at which biological age diverges from chronological age. | UK Biobank (n=308,156) | Albumin, CRP, ALP, MCV, RDW |
-| **Immune Collapse Velocity (ICV)** | Rate of deterioration in immune ratio balance (Neutrophil-to-Lymphocyte Ratio). | Sci Rep 2025, NLR meta-analysis | NLR, PLR, RAR, PNI |
-
----
-
-## 🧪 Scientific Methodology: Personal Baseline Calibration
-Standard medicine compares your blood to a **population average** (the 2.5th–97.5th percentile of strangers). CHRONO ignores the population and computes your **Personal Biological Setpoint Envelope** (Mean ± 1.5 SD).
-
-*   **The Normal Range Trap:** A Hemoglobin of 13.1 is "Normal" for the population, but if your personal mean is 15.2, a drop to 13.1 represents a **14% biological collapse**. CHRONO flags this velocity; a standard lab report discards it.
-*   **The Trident Rule:** A single signal might be noise (stress, infection). The Trident Signal only fires when **all three independent processes** co-move, providing a high-confidence indicator of systemic metabolic stress.
+| **Warburg Index Velocity (WIV)** | Rate of shift toward aerobic glycolysis. | Warburg 1924, Nobel 1931 | LDH, Glucose, RDW trend |
+| **Bio-Age Velocity (BAV)** | Rate of cellular aging acceleration. | PhenoAge / UK Biobank | Albumin, CRP, ALP, MCV |
+| **Immune Collapse Velocity (ICV)** | Rate of immune ratio deterioration. | Sci Rep 2025, NLR meta-analysis | NLR, PLR, RAR, PNI |
 
 ---
 
 ## 🛠️ Technology Stack & Architecture
-CHRONO is built on a multi-layer on-device and cloud-enclave architecture.
 
-### 1. Document Ingestion (Gemma 4 Vision & Audio)
-*   **Model:** Gemma 4 E4B (on-device via LiteRT).
-*   **Function:** Multimodal extraction using the `google-genai` SDK that reads any lab report (PDF, photo, printout, or **audio dictate**) and extracts structured JSON with unit normalization.
+CHRONO leverages the **Gemma 4** family to create a multi-layer clinical pipeline:
 
-### 2. Trident Signal Engine (Fine-Tuned Gemma 4 E4B)
-*   **Model:** Gemma 4 E4B fine-tuned using **Unsloth** on MIMIC-IV and PubMedQA.
-*   **Function:** Computes WIV, BAV, and ICV scores locally on the user's phone, ensuring maximum privacy.
+### 1. Document Ingestion (Gemma 4 E4B Vision)
+*   **Multimodal Extraction:** Reads lab report photos, PDFs, or **audio dictations** to extract structured JSON.
+*   **On-Device Ready:** Optimized for LiteRT deployment to ensure medical data never leaves the patient's device.
 
-### 3. Protocol-99 Agentic Triage (Gemma 4 26B)
-*   **Model:** Gemma 4 26B via Google GenAI SDK.
-*   **Function:** Activated when the **Metabolic Cancer Fingerprint (MCF)** score crosses 0.61. The agent uses **Native Function Calling** and **Thinking Mode** (Budget: 8192) to:
-    *   `validate_signal`: Eliminate confounders (medication, dehydration).
-    *   `query_history`: Cross-reference against 10-year trends.
-    *   `generate_dossier`: Create a structured, oncology-grade triage report.
-    *   `escalate_oncologist`: Securely route the dossier for human review.
+### 2. Protocol-99 Agentic Triage (Gemma 4 27B-it)
+*   **Native Function Calling:** The agent activates at MCF > 0.61 to validate signals and query history.
+*   **Thinking Mode:** Uses a 8192-token reasoning budget to perform deep-dive metabolic analysis and generate oncology-grade dossiers.
 
 ---
 
-## 📁 Project Structure
-```bash
-├── agent/            # Protocol-99 ReAct agent and clinical triage tools
-├── api/              # Secure FastAPI endpoints for agentic reasoning
-├── data/             # Synthetic patient generator (NHANES-calibrated)
-├── demo/             # "Metabolic Nocturne" High-fidelity dashboard
-├── docs/             # Technical writeups and scientific references
-├── engine/           # The Core Trident Signal (WIV, BAV, ICV) calculators
-├── ingestion/        # Gemma 4 Vision pipeline for lab report parsing
-├── notebooks/        # Technical Kaggle notebook for judging
-├── training/         # Unsloth fine-tuning scripts and data prep
-└── requirements.txt  # Production dependencies
+## 🏗️ System Architecture
+
+```mermaid
+graph TD
+    A[Lab Report Image / Audio] -->|Gemma 4 Vision| B(Structured JSON)
+    B --> C{Trident Signal Engine}
+    C -->|WIV| D[Warburg Index]
+    C -->|BAV| E[Bio-Age Velocity]
+    C -->|ICV| F[Immune Collapse]
+    D & E & F --> G[MCF Score]
+    G -->|MCF > 0.61| H[Protocol-99 Activation]
+    H -->|Gemma 4 27B| I[ReAct Agent Loop]
+    I --> J[Tool: Validate Signal]
+    I --> K[Tool: Query History]
+    I --> L[Tool: VAS Score]
+    I --> M[Clinical Dossier]
+    M --> N[Oncologist Escalation]
 ```
 
 ---
 
-## 🚦 Getting Started
+## 📊 Results & Validation
 
-### Prerequisites
-*   Python 3.10+
-*   Google AI Studio API Key (for Gemma 4 backend)
+CHRONO's Trident Signal Engine has been validated against synthetic longitudinal datasets. The following output demonstrates a live calculation:
 
-### Installation
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/asmitha2025/CHRONO-V1.git
-    cd CHRONO-V1
-    ```
-2.  **Install dependencies:**
-    ```bash
-    pip install -r requirements.txt
-    ```
-3.  **Setup Environment:**
-    Create a `.env` file and add your `GOOGLE_AI_API_KEY`.
+```text
+┌─────────────────────── Metabolic Cancer Fingerprint ────────────────────────┐
+│ MCF SCORE: 0.2820                                                           │
+│ ALERT LEVEL: GREEN                                                          │
+│                                                                             │
+│ Confidence: 0.90                                                            │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
 
-### Running the System
-*   **Test the Signal Engine:** `python test_engine.py`
-*   **Launch the Dashboard:** Open `demo/index.html` in your browser to view the high-fidelity patient monitoring interface.
+*Note: In this test run, the MCF score indicates a healthy baseline. Protocol-99 activates automatically when the score exceeds 0.61 (ORANGE BAND).*
 
 ---
 
-## ⚖️ License
-Distributed under the **Apache 2.0 License**. See `LICENSE` for more information.
+## 🛡️ Engineering Standards
+*   **Containerized:** Full `Dockerfile` included for cloud-scale deployment.
+*   **CI/CD:** Automated GitHub Actions pipeline for testing and validation.
+*   **Clean Code:** Modular Python architecture following PEP 8.
+*   **Responsible AI:** Built with a focus on NPV, privacy-first on-device processing, and human-in-the-loop triage.
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+*   Python 3.10+
+*   Google AI Studio API Key (set in `.env`)
+
+### Installation
+1.  **Clone & Install:**
+    ```bash
+    git clone https://github.com/asmitha2025/CHRONO-V1.git
+    cd CHRONO-V1
+    pip install -r requirements.txt
+    ```
+2.  **Run the Dashboard:**
+    Open `demo/index.html` in your browser to explore the **Metabolic Nocturne** interface.
 
 ---
 

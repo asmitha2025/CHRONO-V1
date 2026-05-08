@@ -23,34 +23,42 @@ def create_alpaca_pair(image_description: str, ground_truth_json: dict) -> dict:
 
 def generate_training_data(output_path: str):
     """
-    Generates a synthetic training set for the fine-tuning demo.
-    In a real scenario, this would load real anonymised lab reports.
+    Generates a synthetic training set with 20 examples for the fine-tuning demo.
     """
     dataset = []
     
-    # Example 1: Standard Apollo Report
-    dataset.append(create_alpaca_pair(
-        "A photograph of a lab report from Apollo Diagnostics dated Jan 2024.",
-        {
-            "test_date": "2024-01-18",
-            "markers": [
-                {"name": "LDH", "value": 214, "unit": "U/L"},
-                {"name": "RDW", "value": 14.2, "unit": "%"}
-            ]
-        }
-    ))
-    
-    # Example 2: Handwritten/Noisy Report
-    dataset.append(create_alpaca_pair(
-        "A low-light image of a CBC report with handwritten notes in the margins.",
-        {
-            "test_date": "2023-11-05",
-            "markers": [
-                {"name": "Hemoglobin", "value": 12.1, "unit": "g/dL"},
-                {"name": "WBC", "value": 10.5, "unit": "10^3/uL"}
-            ]
-        }
-    ))
+    scenarios = [
+        ("Apollo Diagnostics, Chennai", "Jan 2024", [("LDH", 214, "U/L"), ("RDW", 14.2, "%")]),
+        ("Dr. Lal PathLabs", "Nov 2023", [("Hemoglobin", 12.1, "g/dL"), ("WBC", 10.5, "10^3/uL")]),
+        ("Metropolis Healthcare", "Feb 2024", [("Glucose", 110, "mg/dL"), ("HbA1c", 6.2, "%")]),
+        ("SRL Diagnostics", "Dec 2023", [("Creatinine", 1.1, "mg/dL"), ("BUN", 18, "mg/dL")]),
+        ("Thyrocare", "Oct 2023", [("TSH", 4.2, "uIU/mL"), ("T4", 1.2, "ng/dL")]),
+        ("Medall Healthcare", "Mar 2024", [("Albumin", 3.8, "g/dL"), ("CRP", 4.5, "mg/L")]),
+        ("AIG Hospitals", "Jan 2024", [("ALP", 102, "U/L"), ("ALT", 35, "U/L")]),
+        ("Max Healthcare", "Nov 2023", [("Platelets", 210, "10^3/uL"), ("MCV", 88, "fL")]),
+        ("Fortis Memorial", "Sep 2023", [("Bilirubin", 0.9, "mg/dL"), ("AST", 28, "U/L")]),
+        ("Manipal Hospitals", "Aug 2023", [("Calcium", 9.4, "mg/dL"), ("Potassium", 4.1, "mmol/L")]),
+        ("Aster DM", "Jul 2023", [("Sodium", 140, "mmol/L"), ("Chloride", 102, "mmol/L")]),
+        ("KIMS Hospitals", "Jun 2023", [("Magnesium", 2.0, "mg/dL"), ("Phosphorus", 3.4, "mg/dL")]),
+        ("Narayana Health", "May 2023", [("Iron", 85, "ug/dL"), ("Ferritin", 120, "ng/mL")]),
+        ("Global Hospitals", "Apr 2023", [("Vitamin D", 22, "ng/mL"), ("Vitamin B12", 340, "pg/mL")]),
+        ("Care Hospitals", "Mar 2023", [("Uric Acid", 5.8, "mg/dL"), ("Triglycerides", 160, "mg/dL")]),
+        ("Cloudnine", "Feb 2023", [("HDL", 45, "mg/dL"), ("LDL", 130, "mg/dL")]),
+        ("Rainbow Children's", "Jan 2023", [("Total Cholesterol", 195, "mg/dL"), ("VLDL", 32, "mg/dL")]),
+        ("Vijaya Diagnostic", "Dec 2022", [("ESR", 15, "mm/hr"), ("INR", 1.0, "ratio")]),
+        ("Neuberg Diagnostics", "Nov 2022", [("PSA", 2.1, "ng/mL"), ("CEA", 1.5, "ng/mL")]),
+        ("Hitech Diagnostic", "Oct 2022", [("Amylase", 65, "U/L"), ("Lipase", 40, "U/L")]),
+    ]
+
+    for lab, date, markers in scenarios:
+        dataset.append(create_alpaca_pair(
+            f"A lab report from {lab} dated {date}.",
+            {
+                "test_date": date,
+                "lab_name": lab,
+                "markers": [{"name": n, "value": v, "unit": u} for n, v, u in markers]
+            }
+        ))
 
     with open(output_path, "w") as f:
         json.dump(dataset, f, indent=2)
