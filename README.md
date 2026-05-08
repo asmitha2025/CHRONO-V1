@@ -2,7 +2,6 @@
 ### World's First Metabolic Cancer Fingerprint Engine
 **Gemma 4 Good Hackathon 2026 — Health & Sciences Track**
 
-[![CHRONO CI](https://github.com/asmitha2025/CHRONO-V1/actions/workflows/ci.yml/badge.svg)](https://github.com/asmitha2025/CHRONO-V1/actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/release/python-3100/)
 [![Gemma 4](https://img.shields.io/badge/Model-Gemma%204-purple.svg)](https://ai.google.dev/gemma)
